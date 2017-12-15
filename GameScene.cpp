@@ -10,11 +10,9 @@ bool GameScene::init()
 	{
 		CC_BREAK_IF(!CCScene::init());
 		preloadResources();
-		//因为~GameScene()中需要CC_SAFE_RELEASE(_menuLayer)， 如果其它层创建失败，_menuLayer将不创建，
-		//所以_menuLayer要先于其他层创建， 否则将报 "reference count greater than 0" 错误
-		_menuLayer = MenuLayer::create(); 
+		_menuLayer = MenuLayer::create();
 		CC_BREAK_IF(!_menuLayer);
-		CC_SAFE_RETAIN(_menuLayer); 
+		CC_SAFE_RETAIN(_menuLayer);
 		_backgroundLayer = BackgroundLayer::create();
 		CC_BREAK_IF(!_backgroundLayer);
 		this->addChild(_backgroundLayer);
@@ -53,8 +51,8 @@ void GameScene::preloadResources(void)
 	textureCache->addImage("ui_button_63-ipadhd.png");
 	textureCache->addImage("ui_button_65-ipadhd.png");
 
-	char str[][50] = { "SmallFish", "Croaker", "AngelFish", "Amphiprion", "PufferS", 
-		"Bream", "Porgy", "Chelonian", "Lantern", "Ray", "Shark", "GoldenTrout", "GShark", 
+	char str[][50] = { "SmallFish", "Croaker", "AngelFish", "Amphiprion", "PufferS",
+		"Bream", "Porgy", "Chelonian", "Lantern", "Ray", "Shark", "GoldenTrout", "GShark",
 		"GMarlinsFish", "GrouperFish", "JadePerch", "MarlinsFish", "PufferB" };
 	for (int i = 0; i < 18; i++)
 	{
@@ -74,7 +72,7 @@ void GameScene::preloadResources(void)
 		CCString* animationName = CCString::createWithFormat("fish_animation_%02d", i + 1);
 		CCAnimationCache::sharedAnimationCache()->addAnimation(animation, animationName->getCString());
 	}
-	
+
 }
 
 GameScene::~GameScene()
@@ -130,7 +128,7 @@ void GameScene::checkOutCollision()
 				checkOutCollisionBetweenFishesAndFishingNet(bullet);
 			}
 		}
-	}	
+	}
 }
 
 void GameScene::update(float delta)
@@ -142,12 +140,18 @@ void GameScene::fishWillBeCaught(Fish* fish)
 {
 	float weaponPercents[k_Cannon_Count] = { 0.3, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1 };
 	float fishPercents[	k_Fish_Type_Count] = { 1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4 };
-	int cannonType = _cannonLayer->getWeapon()->getCannonType();
-	int fishType = fish->getType();
-	if(CCRANDOM_0_1() < 1.1)
+	int _cannonType = _cannonLayer->getWeapon()->getCannonType();
+	int _fishType = fish->getType();
+	float percentage =(float)_cannonType * _fishType;
+	if(CCRANDOM_0_1() < percentage)//1.1
 	{
 		fish->beCaught();
+		//
+		int reward = STATIC_DATA_INT(CCString::createWithFormat(STATIC_DATA_STRING("reward_format"),_fishType)->getCString());
+		alterGold(reward);
+		//
 	}
+
 }
 
 void GameScene::checkOutCollisionBetweenFishesAndFishingNet(Bullet* bullet)
