@@ -10,9 +10,11 @@ bool GameScene::init()
 	{
 		CC_BREAK_IF(!CCScene::init());
 		preloadResources();
-		_menuLayer = MenuLayer::create();
+		//因为~GameScene()中需要CC_SAFE_RELEASE(_menuLayer)， 如果其它层创建失败，_menuLayer将不创建，
+		//所以_menuLayer要先于其他层创建， 否则将报 "reference count greater than 0" 错误
+		_menuLayer = MenuLayer::create(); 
 		CC_BREAK_IF(!_menuLayer);
-		CC_SAFE_RETAIN(_menuLayer);
+		CC_SAFE_RETAIN(_menuLayer); 
 		_backgroundLayer = BackgroundLayer::create();
 		CC_BREAK_IF(!_backgroundLayer);
 		this->addChild(_backgroundLayer);
@@ -51,8 +53,8 @@ void GameScene::preloadResources(void)
 	textureCache->addImage("ui_button_63-ipadhd.png");
 	textureCache->addImage("ui_button_65-ipadhd.png");
 
-	char str[][50] = { "SmallFish", "Croaker", "AngelFish", "Amphiprion", "PufferS",
-		"Bream", "Porgy", "Chelonian", "Lantern", "Ray", "Shark", "GoldenTrout", "GShark",
+	char str[][50] = { "SmallFish", "Croaker", "AngelFish", "Amphiprion", "PufferS", 
+		"Bream", "Porgy", "Chelonian", "Lantern", "Ray", "Shark", "GoldenTrout", "GShark", 
 		"GMarlinsFish", "GrouperFish", "JadePerch", "MarlinsFish", "PufferB" };
 	for (int i = 0; i < 18; i++)
 	{
@@ -72,7 +74,7 @@ void GameScene::preloadResources(void)
 		CCString* animationName = CCString::createWithFormat("fish_animation_%02d", i + 1);
 		CCAnimationCache::sharedAnimationCache()->addAnimation(animation, animationName->getCString());
 	}
-
+	
 }
 
 GameScene::~GameScene()
@@ -128,7 +130,7 @@ void GameScene::checkOutCollision()
 				checkOutCollisionBetweenFishesAndFishingNet(bullet);
 			}
 		}
-	}
+	}	
 }
 
 void GameScene::update(float delta)
@@ -151,7 +153,7 @@ void GameScene::fishWillBeCaught(Fish* fish)
 		alterGold(reward);
 		//
 	}
-
+	
 }
 
 void GameScene::checkOutCollisionBetweenFishesAndFishingNet(Bullet* bullet)
