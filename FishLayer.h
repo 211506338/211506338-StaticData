@@ -4,7 +4,7 @@
 #include "Fish.h"
 USING_NS_CC;
 
-#define FISH_MAX_COUNT 50
+#define FISH_MAX_COUNT 30
 
 class FishLayer :
 	public CCLayer
